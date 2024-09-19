@@ -9,30 +9,30 @@ interface IProps {
 }
 
 export const ProductForm = ({ product }: IProps) => {
-  const allVariantOptions = product.variants.nodes.map((variant) => {
-    const allOptions: { [name: string]: string } = {};
-    variant.selectedOptions.map((option) => {
-      allOptions[option.name] = option.value;
-    });
+  //   const allVariantOptions = product.variants.nodes.map((variant) => {
+  //     const allOptions: { [name: string]: string } = {};
+  //     variant.selectedOptions.map((option) => {
+  //       allOptions[option.name] = option.value;
+  //     });
 
-    return {
-      id: variant.id,
-      title: product.title,
-      handle: product.handle,
-      image: variant.image?.url,
-      options: allOptions,
-      variantTitle: variant.title,
-      variantPrice: variant.price,
-      variantQuantity: 1,
-    };
-  });
+  //     return {
+  //       id: variant.id,
+  //       title: product.title,
+  //       handle: product.handle,
+  //       image: variant.image?.url,
+  //       options: allOptions,
+  //       variantTitle: variant.title,
+  //       variantPrice: variant.price,
+  //       variantQuantity: 1,
+  //     };
+  //   });
 
   const defaultOptions: { [name: string]: OptionValue } = {};
   product.options.map(
     (item) => (defaultOptions[item.name] = item.optionValues[0])
   );
 
-  const [selectedVariant, setfSelectedVariant] = useState(allVariantOptions[0]);
+  //   const [selectedVariant, setfSelectedVariant] = useState(allVariantOptions[0]);
   const [selectedOptions, setSelectedOptions] = useState(defaultOptions);
 
   function setOptions(name: string, value: OptionValue) {
