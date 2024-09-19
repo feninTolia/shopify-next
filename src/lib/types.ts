@@ -43,7 +43,7 @@ interface ProductOption {
   optionValues: OptionValue[]; // Array of option values
 }
 
-interface OptionValue {
+export interface OptionValue {
   name: string; // Option value name, e.g., "Pink"
 }
 

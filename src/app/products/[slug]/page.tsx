@@ -5,8 +5,7 @@ const ProductPage = async ({ params }: { params: { slug: string } }) => {
   const result = await getProduct(params.slug);
 
   return (
-    <div>
-      {result?.title}
+    <div className="min-h-screen py-12 sm:pt-20">
       <ProductPageContent product={result} />
     </div>
   );

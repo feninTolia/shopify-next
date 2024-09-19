@@ -8,7 +8,6 @@ interface IProps {
 }
 
 export const ProductCard = ({ product }: IProps) => {
-  console.log(product);
   const { handle, title, images, priceRange } = product;
   const img = images.nodes[0];
   const price = Number.parseFloat(priceRange.minVariantPrice.amount);
