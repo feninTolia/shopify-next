@@ -1,7 +1,9 @@
+import { ICheckoutVariant } from '@/components/ProductForm';
 import {
   Product,
   ShopifyAllProductsData,
   ShopifyCollectionData,
+  ShopifyPCreateCartData,
   ShopifyProductData,
 } from './types';
 
@@ -122,5 +124,71 @@ export async function getProduct(handle: string) {
 }`;
 
   const response: ShopifyProductData = await shopifyData(query);
-  return response.data.product;
+  return response.data.product ?? [];
+}
+
+export async function createCheckout(id: string, quantity: number) {
+  const query = `
+  mutation {
+  cartCreate(
+    input: {lines: [{quantity:${quantity}, merchandiseId: "${id}"}]}
+  ) {
+    cart {
+      id
+      checkoutUrl
+      lines(first: 10) {
+        edges {
+          node {
+            id
+            merchandise {
+              ... on ProductVariant {
+                id
+                title
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}`;
+
+  const response: ShopifyPCreateCartData = await shopifyData(query);
+  return response.data.cartCreate.cart ?? [];
+}
+
+export async function updateCheckout(id: string, lineItem: ICheckoutVariant) {
+  const lineItemObject = `{
+    merchandiseId: "${lineItem.id}"
+    quantity: ${1}
+    }`;
+
+  const query = `mutation {
+  cartLinesAdd(
+    lines: [${lineItemObject}]
+    cartId: "${id}"
+  ) {
+    cart {
+      id
+      checkoutUrl
+      totalQuantity
+       lines(first: 10) {
+        edges {
+          node {
+            id
+            merchandise {
+              ... on ProductVariant {
+                id
+                title
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}`;
+
+  const response = await shopifyData(query);
+  return response.data.cartLinesAdd.cart ?? [];
 }

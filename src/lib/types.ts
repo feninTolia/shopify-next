@@ -87,3 +87,15 @@ export interface ShopifyProductData {
     product: ProductExtended;
   };
 }
+
+export interface ShopifyPCreateCartData {
+  data: {
+    cartCreate: {
+      cart: {
+        id: string;
+        checkoutUrl: string;
+        lines: { edges: [{ node: { id: string } }] };
+      };
+    };
+  };
+}
