@@ -43,7 +43,17 @@ const ShopProvider = ({ children }: Props) => {
 
       localStorage.setItem('checkout_id', JSON.stringify([newItem, checkout]));
     } else {
-      let newLine: ICheckoutVariant = {};
+      let newLine: ICheckoutVariant = {
+        id: '',
+        title: '',
+        handle: '',
+        options: {},
+        variantTitle: '',
+        variantPrice: {
+          amount: '',
+        },
+        variantQuantity: 0,
+      };
 
       cart.map((cartLineEl) => {
         if (cartLineEl.id === newItem.id) {

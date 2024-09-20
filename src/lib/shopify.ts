@@ -154,6 +154,8 @@ export async function createCheckout(id: string, quantity: number) {
 }`;
 
   const response: ShopifyPCreateCartData = await shopifyData(query);
+  console.log(response.data.cartCreate.cart);
+
   return response.data.cartCreate.cart ?? [];
 }
 
