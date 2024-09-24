@@ -4,6 +4,7 @@ import {
   Dispatch,
   ReactNode,
   SetStateAction,
+  useEffect,
   useState,
 } from 'react';
 import { createCheckout, updateCheckout } from '../shopify';
@@ -29,6 +30,21 @@ const ShopProvider = ({ children }: Props) => {
   const [checkoutId, setIsCheckoutId] = useState('');
   const [checkoutUrl, setIsCheckoutUrl] = useState('');
 
+  useEffect(() => {
+    if (localStorage.checkout_id) {
+      const cartObject = JSON.parse(localStorage.checkout_id);
+      console.log(cartObject);
+      if (cartObject[0].length === 1) {
+        setCart([cartObject[0]]);
+      } else if (cartObject[0].length > 1) {
+        setCart(...[cartObject[0]]);
+      }
+
+      setIsCheckoutId(cartObject[1].id);
+      setIsCheckoutUrl(cartObject[1].checkoutUrl);
+    }
+  }, []);
+
   async function addToCart(newItem: ICheckoutVariant) {
     if (cart.length === 0) {
       const checkout = await createCheckout(
@@ -41,7 +57,10 @@ const ShopProvider = ({ children }: Props) => {
       setIsCheckoutId(checkout.id);
       setIsCheckoutUrl(checkout.checkoutUrl);
 
-      localStorage.setItem('checkout_id', JSON.stringify([newItem, checkout]));
+      localStorage.setItem(
+        'checkout_id',
+        JSON.stringify([[newItem], checkout])
+      );
     } else {
       let newLine: ICheckoutVariant = {
         id: '',
@@ -66,10 +85,13 @@ const ShopProvider = ({ children }: Props) => {
       setCart((prev) => [...prev, newLine]);
       const newCheckout = await updateCheckout(checkoutId, newLine);
 
-      localStorage.setItem(
-        'checkout_id',
-        JSON.stringify([newItem, newCheckout])
-      );
+      if (localStorage.checkout_id) {
+        const cartObj = JSON.parse(localStorage.checkout_id);
+        localStorage.setItem(
+          'checkout_id',
+          JSON.stringify([[...cartObj[0], newLine], newCheckout])
+        );
+      }
     }
   }
 
