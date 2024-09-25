@@ -1,8 +1,12 @@
-import type { Metadata } from 'next';
-import localFont from 'next/font/local';
-import './globals.css';
 import { Navbar } from '@/components/Navbar';
 import { ShopProvider } from '@/lib/context/shopContext';
+import type { Metadata } from 'next';
+import localFont from 'next/font/local';
+import 'swiper/css';
+import 'swiper/css/navigation';
+import 'swiper/css/pagination';
+import 'swiper/css/scrollbar';
+import './globals.css';
 
 const geistSans = localFont({
   src: './fonts/GeistVF.woff',
