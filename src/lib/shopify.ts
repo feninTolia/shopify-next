@@ -154,7 +154,7 @@ export async function createCheckout(id: string, quantity: number) {
 }`;
 
   const response: ShopifyPCreateCartData = await shopifyData(query);
-  console.log(response.data.cartCreate.cart);
+  // console.log(response.data.cartCreate.cart);
 
   return response.data.cartCreate.cart ?? [];
 }
@@ -193,4 +193,28 @@ export async function updateCheckout(id: string, lineItem: ICheckoutVariant) {
 
   const response = await shopifyData(query);
   return response.data.cartLinesAdd.cart ?? [];
+}
+
+export async function removeCheckoutLine(
+  id: string,
+  lineItem: ICheckoutVariant
+) {
+  // console.log('lineItem in remove', lineItem);
+
+  const query = `mutation {
+  cartLinesRemove(
+    cartId: "${id}",
+    lineIds: ["${lineItem.cartLineId}"]
+  ) {
+    cart {
+      id
+      checkoutUrl
+    }
+  }
+}`;
+
+  const response = await shopifyData(query);
+  // console.log('remove line response', response);
+
+  return response.data.cartLinesRemove.cart ?? [];
 }

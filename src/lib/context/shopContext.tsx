@@ -7,7 +7,7 @@ import {
   useEffect,
   useState,
 } from 'react';
-import { createCheckout, updateCheckout } from '../shopify';
+import { createCheckout, removeCheckoutLine, updateCheckout } from '../shopify';
 import { ICheckoutVariant } from '@/components/ProductForm';
 
 type Props = {
@@ -19,6 +19,7 @@ interface ICartContext {
   isCartOpen?: boolean;
   setIsCartOpen?: Dispatch<SetStateAction<boolean>>;
   addToCart?: (newItem: ICheckoutVariant) => Promise<void>;
+  removeCartItem?: (newItem: ICheckoutVariant) => Promise<void>;
   checkoutUrl?: string;
 }
 
@@ -33,11 +34,10 @@ const ShopProvider = ({ children }: Props) => {
   useEffect(() => {
     if (localStorage.checkout_id) {
       const cartObject = JSON.parse(localStorage.checkout_id);
-      console.log(cartObject);
       if (cartObject[0].length === 1) {
-        setCart([cartObject[0]]);
+        setCart([...cartObject[0]]);
       } else if (cartObject[0].length > 1) {
-        setCart(...[cartObject[0]]);
+        setCart([...cartObject[0]]);
       }
 
       setIsCheckoutId(cartObject[1].id);
@@ -59,7 +59,10 @@ const ShopProvider = ({ children }: Props) => {
 
       localStorage.setItem(
         'checkout_id',
-        JSON.stringify([[newItem], checkout])
+        JSON.stringify([
+          [{ ...newItem, cartLineId: checkout.lines.edges[0].node.id }],
+          checkout,
+        ])
       );
     } else {
       let newLine: ICheckoutVariant = {
@@ -82,22 +85,54 @@ const ShopProvider = ({ children }: Props) => {
         }
       });
 
-      setCart((prev) => [...prev, newLine]);
       const newCheckout = await updateCheckout(checkoutId, newLine);
+
+      setCart((prev) => [
+        ...prev,
+        { ...newLine, cartLineId: newCheckout.lines.edges[0].node.id },
+      ]);
 
       if (localStorage.checkout_id) {
         const cartObj = JSON.parse(localStorage.checkout_id);
         localStorage.setItem(
           'checkout_id',
-          JSON.stringify([[...cartObj[0], newLine], newCheckout])
+          JSON.stringify([
+            [
+              ...cartObj[0],
+              { ...newLine, cartLineId: newCheckout.lines.edges[0].node.id },
+            ],
+            newCheckout,
+          ])
         );
       }
     }
   }
 
+  async function removeCartItem(itemToRemove: ICheckoutVariant) {
+    const updatedCart = cart.filter((item) => item.id !== itemToRemove.id);
+    setCart(updatedCart);
+
+    const newCheckout = await removeCheckoutLine(checkoutId, itemToRemove);
+    // console.log('newCheckout', newCheckout);
+
+    if (localStorage.checkout_id) {
+      localStorage.setItem(
+        'checkout_id',
+        JSON.stringify([updatedCart, newCheckout])
+      );
+    }
+  }
+
   return (
     <CartContext.Provider
-      value={{ cart, isCartOpen, setIsCartOpen, addToCart, checkoutUrl }}
+      value={{
+        cart,
+        isCartOpen,
+        setIsCartOpen,
+        addToCart,
+        checkoutUrl,
+        removeCartItem,
+      }}
     >
       {children}
     </CartContext.Provider>

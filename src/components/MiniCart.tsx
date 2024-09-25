@@ -13,13 +13,15 @@ import { useContext, useRef } from 'react';
 import { ICheckoutVariant } from './ProductForm';
 
 export default function MiniCart({ cart }: { cart?: ICheckoutVariant[] }) {
-  const { isCartOpen, setIsCartOpen, checkoutUrl } = useContext(CartContext);
+  const { isCartOpen, setIsCartOpen, checkoutUrl, removeCartItem } =
+    useContext(CartContext);
   const cancelButtonRef = useRef<HTMLButtonElement | null>(null);
 
   let cartTotal = 0;
+  // console.log('cart in MiniCart', cart);
 
   cart?.map((item) => {
-    cartTotal += +item.variantPrice.amount * item.variantQuantity;
+    cartTotal += +item?.variantPrice?.amount * item.variantQuantity;
   });
 
   if (!cart) {
@@ -91,7 +93,7 @@ export default function MiniCart({ cart }: { cart?: ICheckoutVariant[] }) {
                                   </h3>
                                   <p className="ml-4">
                                     {formatter.format(
-                                      +product.variantPrice.amount
+                                      +product?.variantPrice?.amount
                                     )}
                                   </p>
                                 </div>
@@ -107,6 +109,7 @@ export default function MiniCart({ cart }: { cart?: ICheckoutVariant[] }) {
                                 <div className="flex">
                                   <button
                                     type="button"
+                                    onClick={() => removeCartItem?.(product)}
                                     className="font-medium text-gray-800 hover:text-gray-600"
                                   >
                                     Remove
