@@ -113,7 +113,6 @@ const ShopProvider = ({ children }: Props) => {
     setCart(updatedCart);
 
     const newCheckout = await removeCheckoutLine(checkoutId, itemToRemove);
-    // console.log('newCheckout', newCheckout);
 
     if (localStorage.checkout_id) {
       localStorage.setItem(

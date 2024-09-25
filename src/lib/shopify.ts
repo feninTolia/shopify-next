@@ -154,8 +154,6 @@ export async function createCheckout(id: string, quantity: number) {
 }`;
 
   const response: ShopifyPCreateCartData = await shopifyData(query);
-  // console.log(response.data.cartCreate.cart);
-
   return response.data.cartCreate.cart ?? [];
 }
 
@@ -199,8 +197,6 @@ export async function removeCheckoutLine(
   id: string,
   lineItem: ICheckoutVariant
 ) {
-  // console.log('lineItem in remove', lineItem);
-
   const query = `mutation {
   cartLinesRemove(
     cartId: "${id}",
@@ -214,7 +210,5 @@ export async function removeCheckoutLine(
 }`;
 
   const response = await shopifyData(query);
-  // console.log('remove line response', response);
-
   return response.data.cartLinesRemove.cart ?? [];
 }
