@@ -9,7 +9,7 @@ interface IProps {
 
 export const ProductCard = ({ product }: IProps) => {
   const { handle, title, images, priceRange } = product;
-  const img = images.nodes[0];
+  const img = images?.nodes?.[0];
   const price = Number.parseFloat(priceRange.minVariantPrice.amount);
 
   return (
@@ -17,12 +17,12 @@ export const ProductCard = ({ product }: IProps) => {
       <div className="w-full bg-gray-200 rounded-3xl overflow-hidden">
         <div className="relative group-hover:opacity-75 h-72">
           <Image
-            src={img.url}
+            src={img?.url}
             // width={100}
             // height={50}
             layout="fill"
             objectFit="cover"
-            alt={img.altText + ''}
+            alt={img?.altText + ''}
           />
         </div>
       </div>

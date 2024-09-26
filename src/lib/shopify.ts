@@ -84,6 +84,32 @@ export const getAllProducts = async () => {
 export async function getProduct(handle: string) {
   const query = `{
   product(handle: "${handle}") {
+    collections(first: 1) {
+      edges {
+        node {
+          products(first: 5) {
+            edges {
+              node {
+                id
+                title
+                handle
+                priceRange {
+                  minVariantPrice {
+                    amount
+                  }
+                }
+               images(first: 5) {
+                  nodes{
+                    altText
+                    url
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
     id
     title
     handle

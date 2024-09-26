@@ -11,16 +11,17 @@ export interface Product {
 }
 
 export interface ProductExtended {
-  id: string; // "gid://shopify/Product/8843853955318"
-  title: string; // "Millionaire in the Waiting"
-  handle: string; // "millionaire-in-the-waiting"
-  description: string; // Product description
+  id: string;
+  collections: ProductCollection;
+  title: string;
+  handle: string;
+  description: string;
   images: {
-    edges: ImageEdge[]; // Array of image edges
+    edges: ImageEdge[];
   };
-  options: ProductOption[]; // Array of product options
+  options: ProductOption[];
   variants: {
-    nodes: Variant[]; // Array of variant nodes
+    nodes: Variant[];
   };
 }
 
@@ -60,6 +61,18 @@ interface Variant {
 interface SelectedOption {
   name: string; // Option name, e.g., "Color"
   value: string; // Selected value for the option, e.g., "Pink"
+}
+
+interface ProductCollection {
+  edges: {
+    node: {
+      products: {
+        edges: {
+          node: Product;
+        }[];
+      };
+    };
+  }[];
 }
 
 export interface ShopifyCollectionData {
