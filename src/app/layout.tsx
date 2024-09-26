@@ -7,6 +7,7 @@ import 'swiper/css/navigation';
 import 'swiper/css/pagination';
 import 'swiper/css/scrollbar';
 import './globals.css';
+import { Footer } from '@/components/Footer';
 
 const geistSans = localFont({
   src: './fonts/GeistVF.woff',
@@ -38,7 +39,7 @@ export default function RootLayout({
           <div className="flex flex-col justify-between min-h-screen">
             <Navbar />
             <main>{children}</main>
-            <footer>Footer</footer>
+            <Footer />
           </div>
         </body>
       </html>
