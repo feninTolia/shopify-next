@@ -51,6 +51,7 @@ export interface OptionValue {
 interface Variant {
   id: string; // Variant ID
   title: string; // Variant title, e.g., "Pink / S"
+  availableForSale: string;
   price: {
     amount: string; // Price amount as a string, e.g., "139.0"
   };

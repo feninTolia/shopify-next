@@ -1,9 +1,11 @@
 'use client';
+import { CartContext } from '@/lib/context/shopContext';
 import { OptionValue, ProductExtended } from '@/lib/types';
 import { formatter } from '@/utils/formatter';
-import { useContext, useState } from 'react';
+import axios from 'axios';
+import { useContext, useEffect, useState } from 'react';
+import useSWR from 'swr';
 import { ProductOptions } from './ProductOptions';
-import { CartContext } from '@/lib/context/shopContext';
 
 interface IProps {
   product: ProductExtended;
@@ -24,8 +26,17 @@ export interface ICheckoutVariant {
   cartLineId?: string;
 }
 
+const fetcher = (url: string, id: string) =>
+  axios.get(url, { params: { id: id } }).then((res) => res.data);
+
 export const ProductForm = ({ product }: IProps) => {
   const { addToCart } = useContext(CartContext);
+  const { data: productInventory } = useSWR<ProductExtended>(
+    ['/api/available?id=' + product.handle],
+    (url: string, id: string) => fetcher(url, id),
+    { errorRetryCount: 3 }
+  );
+  const [available, setAvailable] = useState(true);
 
   const allVariantOptions: ICheckoutVariant[] = product.variants.nodes.map(
     (variant) => {
@@ -70,6 +81,20 @@ export const ProductForm = ({ product }: IProps) => {
     });
   }
 
+  useEffect(() => {
+    if (productInventory) {
+      const checkAvailable = productInventory.variants.nodes.filter(
+        (item) => item.id === selectedVariant.id
+      );
+
+      if (checkAvailable[0].availableForSale) {
+        setAvailable(true);
+      } else {
+        setAvailable(false);
+      }
+    }
+  }, [productInventory, selectedVariant.id]);
+
   return (
     <div className="rounded-2xl p-4 shadow-lg flex flex-col w-full md:w-1/3">
       <h2 className="text-2xl font-bold">{product.title}</h2>
@@ -85,14 +110,20 @@ export const ProductForm = ({ product }: IProps) => {
           setOptions={setOptions}
         />
       ))}
-      <button
-        onClick={() => {
-          addToCart?.(selectedVariant);
-        }}
-        className="bg-black rounded-lg text-white px-2 py-2 hover:bg-gray-800"
-      >
-        Add to chart
-      </button>
+      {available ? (
+        <button
+          onClick={() => {
+            addToCart?.(selectedVariant);
+          }}
+          className="bg-black rounded-lg text-white px-2 py-2 hover:bg-gray-800"
+        >
+          Add to chart
+        </button>
+      ) : (
+        <button className="bg-gray-800 rounded-lg text-white px-2 py-2 cursor-default ">
+          Sold out!
+        </button>
+      )}
     </div>
   );
 };
